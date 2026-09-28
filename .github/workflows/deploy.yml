@@ -127,4 +127,4 @@ jobs:
               "$IMAGE_NAME"
 
             echo "Running containers:"
-            docker ps[vihoht@prismoht workflows]$
+            docker ps
