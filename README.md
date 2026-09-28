@@ -51,12 +51,12 @@ O spring sempre adiciona esse arquivo quando o projeto é criado pelo Spring Ini
 
 ## Criar a classe de Teste
 
-Criar o arquivo src/test/br.insper.pagamento.service.PagamentoServiceTest
+Criar o arquivo src/test/br.insper.arqui.service.PagamentoServiceTest
 
 Copiar o seguinte trecho de código nele
 ```
 
-package br.insper.pagamento.service;
+package br.insper.arqui.service;
 
 @ExtendWith(MockitoExtension.class)
 public class PagamentoServiceTest {
