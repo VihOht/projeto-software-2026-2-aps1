@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MusicasService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.insper.arqui.service</a>
+</div>
+
+<h1>Coverage Summary for Class: MusicasService (br.insper.arqui.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MusicasService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64.3%
+  </span>
+  <span class="absValue">
+    (9/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (30/32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package br.insper.arqui.service;
+&nbsp;
+&nbsp;import br.insper.arqui.dto.MusicasDto;
+&nbsp;import br.insper.arqui.entity.Musicas;
+&nbsp;import br.insper.arqui.exception.MusicasNaoEncontradaException;
+&nbsp;import br.insper.arqui.exception.ValidacaoMusicasException;
+&nbsp;import br.insper.arqui.repository.MusicasRepository;
+&nbsp;import br.insper.arqui.validator.ValidadorMusicas;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+&nbsp;public class MusicasService {
+&nbsp;
+&nbsp;	private final MusicasRepository musicasRepository;
+&nbsp;	private final ValidadorMusicas validadorMusicas;
+&nbsp;
+<b class="fc">&nbsp;	public MusicasService(MusicasRepository musicasRepository, ValidadorMusicas validadorMusicas) {</b>
+<b class="fc">&nbsp;		this.musicasRepository = musicasRepository;</b>
+<b class="fc">&nbsp;		this.validadorMusicas = validadorMusicas;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Musicas criar(MusicasDto dto) {
+<b class="fc">&nbsp;		validadorMusicas.validar(dto);</b>
+<b class="fc">&nbsp;		validarDuplicidade(dto, null);</b>
+<b class="fc">&nbsp;		return musicasRepository.save(Musicas.fromDto(dto));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public List&lt;Musicas&gt; listarTodos() {
+<b class="fc">&nbsp;		return musicasRepository.findAll();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public List&lt;Musicas&gt; listarPorJogo(Long jogoId) {
+<b class="pc">&nbsp;		if (jogoId == null || jogoId &lt;= 0) {</b>
+<b class="nc">&nbsp;			throw new ValidacaoMusicasException(&quot;ID do jogo deve ser maior que zero&quot;);</b>
+&nbsp;		}
+<b class="fc">&nbsp;		return musicasRepository.findAllByJogoId(jogoId);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Musicas obterPorId(Long id) {
+<b class="fc">&nbsp;		return musicasRepository.findById(id)</b>
+<b class="fc">&nbsp;				.orElseThrow(() -&gt; new MusicasNaoEncontradaException(id));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Musicas atualizar(Long id, MusicasDto dto) {
+<b class="fc">&nbsp;		validadorMusicas.validar(dto);</b>
+<b class="fc">&nbsp;		Musicas musica = obterPorId(id);</b>
+<b class="fc">&nbsp;		validarDuplicidade(dto, musica);</b>
+<b class="fc">&nbsp;		musica.setJogoId(dto.getJogoId());</b>
+<b class="fc">&nbsp;		musica.setTitulo(dto.getTitulo());</b>
+<b class="fc">&nbsp;		musica.setArtista(dto.getArtista());</b>
+<b class="fc">&nbsp;		musica.setAlbum(dto.getAlbum());</b>
+<b class="fc">&nbsp;		musica.setDataLancamento(dto.getDataLancamento());</b>
+<b class="fc">&nbsp;		musica.setDuracaoSegundos(dto.getDuracaoSegundos());</b>
+<b class="fc">&nbsp;		musica.setGenero(dto.getGenero());</b>
+<b class="fc">&nbsp;		return musicasRepository.save(musica);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void deletar(Long id) {
+<b class="fc">&nbsp;		Musicas musica = obterPorId(id);</b>
+<b class="fc">&nbsp;		musicasRepository.delete(musica);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	private void validarDuplicidade(MusicasDto dto, Musicas atual) {
+<b class="fc">&nbsp;		boolean dadosNaoMudaram = atual != null</b>
+<b class="pc">&nbsp;				&amp;&amp; atual.getJogoId().equals(dto.getJogoId())</b>
+<b class="pc">&nbsp;				&amp;&amp; atual.getTitulo().equals(dto.getTitulo())</b>
+<b class="nc">&nbsp;				&amp;&amp; atual.getArtista().equals(dto.getArtista());</b>
+&nbsp;
+<b class="pc">&nbsp;		if (!dadosNaoMudaram &amp;&amp; musicasRepository.existsByJogoIdAndTituloAndArtista(</b>
+<b class="fc">&nbsp;				dto.getJogoId(), dto.getTitulo(), dto.getArtista())) {</b>
+<b class="fc">&nbsp;			throw new ValidacaoMusicasException(&quot;A música já está cadastrada para esse jogo&quot;);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-09-28 10:46</div>
+</div>
+</body>
+</html>
