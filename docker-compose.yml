@@ -1,18 +1,106 @@
-version: '3.8'
-
 services:
-  pagamento-app:
+
+  jogos-db:
+    image: postgres:16
+    container_name: jogos-db
+    environment:
+      POSTGRES_DB: jogos_db
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: senha
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuario -d jogos_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - jogos-data:/var/lib/postgresql/data
+
+  musicas-db:
+    image: postgres:16
+    container_name: musicas-db
+    environment:
+      POSTGRES_DB: musicas_db
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: senha
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuario -d musicas_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - musicas-data:/var/lib/postgresql/data
+
+  enlistamento-db:
+    image: postgres:16
+    container_name: enlistamento-db
+    environment:
+      POSTGRES_DB: enlistamento_db
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: senha
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuario -d enlistamento_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - enlistamento-data:/var/lib/postgresql/data
+
+  jogos-service:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pagamento-app
+    container_name: jogos-service
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
+      DB_HOST: jogos-db
+      DB_NAME: jogos_db
+      DB_USER: usuario
+      DB_PASSWORD: senha
+      RAWG_API_KEY: ${RAWG_API_KEY}
+    depends_on:
+      jogos-db:
+        condition: service_healthy
+
+  musicas-service:
+    build:
+      context: .
+      dockerfile: musicas-service/Dockerfile
+    container_name: musicas-service
+    ports:
+      - "8082:8082"
+    environment:
+      MUSICAS_DB_HOST: musicas-db
+      MUSICAS_DB_NAME: musicas_db
+      MUSICAS_DB_USER: usuario
+      MUSICAS_DB_PASSWORD: senha
+      JOGOS_SERVICE_URL: http://jogos-service:8080
+    depends_on:
+      musicas-db:
+        condition: service_healthy
+      jogos-service:
+        condition: service_started
+
+  enlistamento-service:
+    build:
+      context: .
+      dockerfile: enlistamento-service/Dockerfile
+    container_name: enlistamento-service
+    ports:
+      - "8083:8083"
+    environment:
+      ENLISTAMENTO_DB_HOST: enlistamento-db
+      ENLISTAMENTO_DB_NAME: enlistamento_db
+      ENLISTAMENTO_DB_USER: usuario
+      ENLISTAMENTO_DB_PASSWORD: senha
+      JOGOS_SERVICE_URL: http://jogos-service:8080
+    depends_on:
+      enlistamento-db:
+        condition: service_healthy
+      jogos-service:
+        condition: service_started
+
+volumes:
+  jogos-data:
+  musicas-data:
+  enlistamento-data:
