@@ -1,6 +1,8 @@
 package br.insper.arqui.controller;
 
+import br.insper.arqui.client.RawgClient;
 import br.insper.arqui.dto.JogosDto;
+import br.insper.arqui.dto.RawgGamesResponse;
 import br.insper.arqui.entity.Jogos;
 import br.insper.arqui.entity.Pasta;
 import br.insper.arqui.service.JogosService;
@@ -22,39 +24,46 @@ import java.util.List;
 @RequestMapping("/api/jogos")
 public class JogosController {
 
-	private final JogosService jogosService;
+    private final JogosService jogosService;
+    private final RawgClient rawgClient;
 
-	public JogosController(JogosService jogosService) {
-		this.jogosService = jogosService;
-	}
+    public JogosController(JogosService jogosService, RawgClient rawgClient) {
+        this.jogosService = jogosService;
+        this.rawgClient = rawgClient;
+    }
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public Jogos criar(@RequestBody JogosDto dto) {
-		return jogosService.criar(dto);
-	}
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Jogos criar(@RequestBody JogosDto dto) {
+        return jogosService.criar(dto);
+    }
 
-	@GetMapping
-	public List<Jogos> listar(@RequestParam(required = false) Pasta pasta) {
-		if (pasta == null) {
-			return jogosService.listarTodos();
-		}
-		return jogosService.listarPorPasta(pasta);
-	}
+    @GetMapping
+    public List<Jogos> listar(@RequestParam(required = false) Pasta pasta) {
+        if (pasta == null) {
+            return jogosService.listarTodos();
+        }
+        return jogosService.listarPorPasta(pasta);
+    }
 
-	@GetMapping("/{id}")
-	public Jogos obter(@PathVariable Long id) {
-		return jogosService.obterPorId(id);
-	}
+    @GetMapping("/{id}")
+    public Jogos obter(@PathVariable Long id) {
+        return jogosService.obterPorId(id);
+    }
 
-	@PutMapping("/{id}")
-	public Jogos atualizar(@PathVariable Long id, @RequestBody JogosDto dto) {
-		return jogosService.atualizar(id, dto);
-	}
+    @PutMapping("/{id}")
+    public Jogos atualizar(@PathVariable Long id, @RequestBody JogosDto dto) {
+        return jogosService.atualizar(id, dto);
+    }
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deletar(@PathVariable Long id) {
-		jogosService.deletar(id);
-	}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletar(@PathVariable Long id) {
+        jogosService.deletar(id);
+    }
+
+    @GetMapping("/catalogo")
+    public RawgGamesResponse buscarCatalogo(@RequestParam String busca) {
+        return rawgClient.buscarJogos(busca);
+    }
 }

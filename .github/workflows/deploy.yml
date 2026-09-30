@@ -18,6 +18,7 @@ env:
   DB_NAME: ${{ secrets.DB_NAME }}
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
 
 jobs:
   build:
@@ -66,13 +67,15 @@ jobs:
           DB_NAME: ${{ env.DB_NAME }}
           DB_USER: ${{ env.DB_USER }}
           DB_PASSWORD: ${{ env.DB_PASSWORD }}
+          RAWG_API_KEY: ${{ env.RAWG_API_KEY }}
+
         with:
           host: ${{ secrets.HOST_TEST }}
           username: ubuntu
           key: ${{ secrets.KEY_TEST }}
           port: 22
 
-          envs: IMAGE_NAME,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,PROJECT_NAME,DB_HOST,DB_PORT,DB_NAME,DB_USER,DB_PASSWORD
+          envs: IMAGE_NAME,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,PROJECT_NAME,DB_HOST,DB_PORT,DB_NAME,DB_USER,DB_PASSWORD,RAWG_API_KEY
 
           script: |
             set -e
@@ -106,7 +109,6 @@ jobs:
                 postgres:18
             fi
 
-
             echo "$DOCKERHUB_TOKEN" | \
               docker login \
                 --username "$DOCKERHUB_USERNAME" \
@@ -124,6 +126,7 @@ jobs:
               -e DB_NAME="$DB_NAME" \
               -e DB_USER="$DB_USER" \
               -e DB_PASSWORD="$DB_PASSWORD" \
+              -e RAWG_API_KEY="$RAWG_API_KEY" \
               "$IMAGE_NAME"
 
             echo "Running containers:"

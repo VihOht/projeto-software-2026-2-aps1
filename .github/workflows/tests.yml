@@ -31,6 +31,6 @@ jobs:
           paths: |
             tests/jacoco.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 10
-          min-coverage-changed-files: 10
+          min-coverage-overall: 80
+          min-coverage-changed-files: 80
           fail-build: true
