@@ -85,20 +85,25 @@ public class ValidadorJogosTests {
     }
 
     @Test
-    void deveFalharQuandoDuracaoForNula() {
+    void devePermitirDuracaoNula() {
         JogosDto dto = dtoValido();
         dto.setDuracaoHoras(null);
 
-        assertThrows(
-                ValidacaoJogosException.class,
-                () -> validador.validar(dto)
-        );
+        assertDoesNotThrow(() -> validador.validar(dto));
     }
 
     @Test
-    void deveFalharQuandoDuracaoForZero() {
+    void devePermitirDuracaoZero() {
         JogosDto dto = dtoValido();
         dto.setDuracaoHoras(0);
+
+        assertDoesNotThrow(() -> validador.validar(dto));
+    }
+
+    @Test
+    void deveFalharQuandoDuracaoForNegativa() {
+        JogosDto dto = dtoValido();
+        dto.setDuracaoHoras(-1);
 
         assertThrows(
                 ValidacaoJogosException.class,
@@ -129,25 +134,19 @@ public class ValidadorJogosTests {
     }
 
     @Test
-    void deveFalharQuandoTrilhaSonoraForNula() {
+    void devePermitirTrilhaSonoraNula() {
         JogosDto dto = dtoValido();
         dto.setTrilhaSonora(null);
 
-        assertThrows(
-                ValidacaoJogosException.class,
-                () -> validador.validar(dto)
-        );
+        assertDoesNotThrow(() -> validador.validar(dto));
     }
 
     @Test
-    void deveFalharQuandoDesenvolvedoraForNula() {
+    void devePermitirDesenvolvedoraNula() {
         JogosDto dto = dtoValido();
         dto.setDesenvolvedora(null);
 
-        assertThrows(
-                ValidacaoJogosException.class,
-                () -> validador.validar(dto)
-        );
+        assertDoesNotThrow(() -> validador.validar(dto));
     }
 
     @Test
