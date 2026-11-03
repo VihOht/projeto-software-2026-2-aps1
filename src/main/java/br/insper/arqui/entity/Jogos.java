@@ -36,7 +36,7 @@ public class Jogos {
 	@Column(name = "data_lancamento", nullable = false)
 	private LocalDate dataLancamento;
 
-	@Column(name = "duracao_horas", nullable = false)
+	@Column(name = "duracao_horas")
 	private Integer duracaoHoras;
 
 	@Column(name = "tipo_jogo", nullable = false)
@@ -46,10 +46,10 @@ public class Jogos {
 	@Enumerated(EnumType.STRING)
 	private Pasta pasta;
 
-	@Column(name = "trilha_sonora", nullable = false)
+	@Column(name = "trilha_sonora")
 	private String trilhaSonora;
 
-	@Column(nullable = false)
+	@Column
 	private String desenvolvedora;
 
 	@Column(nullable = false)
